@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>N-Talent Self-Service Booking System</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #ec4899;
+      --accent-hover: #db2777;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --success: #22c55e;
+      --warning: #eab308;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 15px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto 20px auto;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #334155;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    header h1 {
+      color: var(--accent);
+      font-size: 1.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: #334155;
+      color: white;
+      border: 1px solid #475569;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .nav-btn-success {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .nav-btn-success:hover {
+      background: #16a34a;
+    }
+
+    .controls-wrapper {
+      max-width: 1100px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      font-weight: bold;
+      margin-right: 4px;
+    }
+
+    .filter-btn {
+      background: #334155;
+      color: var(--text-main);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 15px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card-img {
+      height: 350px;
+      width: 100%;
+      background-color: #334155;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover .card-img img {
+      transform: scale(1.05);
+    }
+
+    .card-body {
+      padding: 15px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .badge-group {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(236, 72, 153, 0.2);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      width: fit-content;
+    }
+
+    .badge-gender {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+    }
+
+    .badge-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .badge-available {
+      background: rgba(34, 197, 94, 0.9);
+      color: white;
+    }
+    .badge-booked {
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+    }
+
+    .talent-info {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .price {
+      font-weight: bold;
+      color: #38bdf8;
+      margin: 10px 0;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .book-btn {
+      flex: 2;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .book-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .book-btn:disabled {
+      background: #475569;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .edit-card-btn {
+      flex: 1;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .delete-card-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 10px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close-btn {
+      position: absolute;
+      right: 15px; top: 15px;
+      cursor: pointer;
+      color: var(--text-sub);
+      font-size: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      font-size: 16px;
+    }
+
+    .summary-box {
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      text-align: right;
+      border: 1px solid #334155;
+    }
+
+    .qr-container {
+      display: none;
+      background: #ffffff;
+      color: #0f172a;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 15px;
+      border: 2px dashed var(--accent);
+    }
+
+    .qr-code-img {
+      width: 180px;
+      height: 180px;
+      margin: 10px auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .slip-preview, .talent-preview {
+      display: none;
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      header h1 { font-size: 1.3rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER SECTIONS -->
+  <header>
+    <h1>✨ N-Booking Service (Self-Service)</h1>
+    <div class="header-actions">
+      <button class="nav-btn" onclick="exportTalentsCode()">📤 คัดลอกข้อมูล (อัปเดต GitHub)</button>
+      <button class="nav-btn nav-btn-success" onclick="openTalentModal(false)">➕ เพิ่มพนักงานใหม่</button>
+    </div>
+  </header>
+
+  <!-- USER MAIN VIEW -->
+  <div id="userView">
+    <!-- FILTERS -->
+    <div class="controls-wrapper">
+      <!-- ตัวกรองเพศ -->
+      <div class="controls">
+        <span class="filter-label">เพศ:</span>
+        <button class="filter-btn active" onclick="setGenderFilter('all')">ทั้งหมด</button>
+        <button class="filter-btn" onclick="setGenderFilter('หญิง')">👧🏻 ผู้หญิง</button>
+        <button class="filter-btn" onclick="setGenderFilter('ชาย')">👦🏻 ผู้ชาย</button>
+      </div>
+
+      <!-- ตัวกรองหมวดหมู่ -->
+      <div class="controls">
+        <span class="filter-label">หมวดหมู่:</span>
+        <button class="filter-btn active" onclick="setCatFilter('all')">ทั้งหมด</button>
+        <button class="filter-btn" onclick="setCatFilter('N-Lite')">N-Lite (สายชิล/พูดคุย)</button>
+        <button class="filter-btn" onclick="setCatFilter('N-Party')">N-Party (สายดื่ม/ปาร์ตี้)</button>
+        <button class="filter-btn" onclick="setCatFilter('N-VIP')">N-VIP (ส่วนตัว)</button>
+      </div>
+
+      <!-- ตัวกรองสถานะจอง/ว่าง -->
+      <div class="controls">
+        <span class="filter-label">สถานะ:</span>
+        <button class="filter-btn active" onclick="setStatusFilter('all')">ทั้งหมด</button>
+        <button class="filter-btn" onclick="setStatusFilter('available')">🟢 ว่าง (พร้อมรับงาน)</button>
+        <button class="filter-btn" onclick="setStatusFilter('booked')">🔴 จองแล้ว / ติดงาน</button>
+      </div>
+    </div>
+
+    <!-- GRID CARDS -->
+    <div class="grid" id="talentGrid"></div>
+  </div>
+
+  <!-- 1. MODAL จองคิว -->
+  <div class="modal" id="bookingModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('bookingModal')">&times;</span>
+      <h2 id="modalTitle" style="margin-bottom: 15px;">จองคิว</h2>
+      <form id="bookingForm" onsubmit="submitBooking(event)">
+        <input type="hidden" id="talentId">
+        
+        <div class="form-group">
+          <label>ชื่อผู้จอง / เบอร์ติดต่อ</label>
+          <input type="text" id="customerName" placeholder="เช่น คุณเอ 081-XXX-XXXX" required>
+        </div>
+
+        <div class="form-group">
+          <label>วันที่ต้องการจอง</label>
+          <input type="date" id="bookDate" required>
+        </div>
+
+        <div class="form-group">
+          <label>เวลาที่เริ่มงาน</label>
+          <input type="time" id="bookTime" required>
+        </div>
+
+        <div class="form-group">
+          <label>จำนวนชั่วโมง</label>
+          <input type="number" id="bookHours" min="1" max="12" value="2" onchange="calculatePrice()" oninput="calculatePrice()" required>
+        </div>
+
+        <div class="form-group">
+          <label>สถานที่ / หมายเหตุจากลูกค้า</label>
+          <input type="text" id="bookLocation" placeholder="เช่น ร้าน A / เลานจ์ B" required>
+        </div>
+
+        <div class="form-group">
+          <label>ช่องทางการชำระเงิน</label>
+          <select id="paymentMethod" onchange="handlePaymentChange()">
+            <option value="โอนเงิน">โอนเงิน / QR Code ส่วนตัว</option>
+            <option value="เงินสด">เงินสดหน้างาน</option>
+          </select>
+        </div>
+
+        <div class="summary-box">
+          <div>ราคารวมทั้งหมด: <strong id="totalPrice" style="color: #38bdf8; font-size: 1.2rem;">0</strong> บาท</div>
+        </div>
+
+        <!-- QR CODE PAYMENT DISPLAY -->
+        <div class="qr-container" id="qrContainer">
+          <div style="font-weight: bold;" id="qrTitleLabel">📲 สแกน QR Code เพื่อชำระเงิน</div>
+          <img id="qrImage" class="qr-code-img" src="" alt="QR Code ส่วนตัว">
+          <small id="qrAccountLabel" style="color: #64748b;">บัญชีรับชำระเงิน</small>
+        </div>
+
+        <div class="form-group" id="slipGroup" style="margin-top: 15px;">
+          <label>แนบหลักฐานการโอนเงิน (สลิป)</label>
+          <input type="file" id="slipFile" accept="image/*" onchange="previewSlip(event)">
+          <img id="slipPreview" class="slip-preview" src="" alt="ตัวอย่างสลิป">
+        </div>
+
+        <button type="submit" class="book-btn" style="margin-top: 15px;">ยืนยันการจองคิวทันที</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. MODAL เพิ่ม/แก้ไขพนักงาน -->
+  <div class="modal" id="talentModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('talentModal')">&times;</span>
+      <h2 id="talentModalTitle">เพิ่มพนักงานใหม่</h2>
+      <br>
+      <form id="talentForm" onsubmit="saveTalent(event)">
+        <input type="hidden" id="editTalentId">
+        
+        <div class="form-group">
+          <label>ชื่อพนักงาน</label>
+          <input type="text" id="talentNameInput" required>
+        </div>
+
+        <div class="form-group">
+          <label>เพศ</label>
+          <select id="talentGenderInput">
+            <option value="หญิง">หญิง</option>
+            <option value="ชาย">ชาย</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>หมวดหมู่</label>
+          <select id="talentCategoryInput">
+            <option value="N-Lite">N-Lite (สายชิล/พูดคุย)</option>
+            <option value="N-Party">N-Party (สายดื่ม/ปาร์ตี้)</option>
+            <option value="N-VIP">N-VIP (ดูแลส่วนตัว)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>สถานะพนักงาน</label>
+          <select id="talentStatusInput">
+            <option value="available">🟢 ว่าง (พร้อมรับงาน)</option>
+            <option value="booked">🔴 จองแล้ว / ติดงาน</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>สัดส่วน / ส่วนสูง</label>
+          <input type="text" id="talentProportionInput" placeholder="เช่น 32-24-35 / 165 ซม.">
+        </div>
+
+        <div class="form-group">
+          <label>หมายเหตุ / เงื่อนไขเพิ่มเติม</label>
+          <input type="text" id="talentNoteInput" placeholder="เช่น ไม่ดื่มหนัก / รับเฉพาะงานในเมือง">
+        </div>
+
+        <div class="form-group">
+          <label>ราคาต่อชั่วโมง (บาท)</label>
+          <input type="number" id="talentRateInput" required>
+        </div>
+
+        <!-- อัปโหลดรูปภาพโปรไฟล์จากเครื่อง -->
+        <div class="form-group">
+          <label>รูปภาพโปรไฟล์ (จากเครื่อง)</label>
+          <input type="file" id="talentImgFile" accept="image/*" onchange="previewTalentImg(event)">
+          <img id="talentImgPreview" class="talent-preview" src="" alt="ตัวอย่างรูปโปรไฟล์">
+        </div>
+
+        <!-- อัปโหลด QR Code ส่วนตัวจากเครื่อง -->
+        <div class="form-group" style="border-top: 1px dashed #475569; padding-top: 10px; margin-top: 10px;">
+          <label>📲 QR Code รับเงิน (จากเครื่อง)</label>
+          <input type="file" id="talentQrFile" accept="image/*" onchange="previewTalentQr(event)">
+          <img id="talentQrPreview" class="talent-preview" src="" alt="ตัวอย่าง QR Code ส่วนตัว">
+        </div>
+
+        <button type="submit" class="book-btn" style="margin-top: 15px;">บันทึกข้อมูล</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // VARIABLE STATES
+    let currentSelectedTalent = null;
+    let currentSlipBase64 = '';
+    let currentTalentImgBase64 = '';
+    let currentTalentQrBase64 = '';
+
+    let selectedGenderFilter = 'all';
+    let selectedCatFilter = 'all';
+    let selectedStatusFilter = 'all';
+
+    // Initial Data
+    let talents = JSON.parse(localStorage.getItem('n_talents')) || [
+      { id: 1, name: 'มินนี่', gender: 'หญิง', category: 'N-Lite', status: 'available', proportion: '32-24-35 / 165 ซม.', note: 'อารมณ์ดี คุยสนุก', rate: 500, img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60', personalQr: '' },
+      { id: 2, name: 'เจนนี่', gender: 'หญิง', category: 'N-Party', status: 'booked', proportion: '34-25-36 / 168 ซม.', note: 'ดื่มเก่ง เอนเตอร์เทนดี', rate: 800, img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60', personalQr: '' },
+      { id: 3, name: 'อเล็กซ์', gender: 'ชาย', category: 'N-VIP', status: 'available', proportion: '38-30-36 / 180 ซม.', note: 'ดูแลเป็นกันเอง ขับรถได้', rate: 1500, img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=60', personalQr: '' }
+    ];
+
+    let bookings = JSON.parse(localStorage.getItem('n_bookings')) || [];
+
+    function saveData() {
+      localStorage.setItem('n_talents', JSON.stringify(talents));
+      localStorage.setItem('n_bookings', JSON.stringify(bookings));
+    }
+
+    // EXPORT DATA FOR GITHUB UPDATE
+    function exportTalentsCode() {
+      const jsonStr = JSON.stringify(talents, null, 2);
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        alert('📋 คัดลอกข้อมูลพนักงานสำเร็จ!\n\nคุณสามารถนำข้อมูลนี้ไปแทนที่ตัวแปร `talents` ในไฟล์ index.html บนคอมพิวเตอร์ แล้ว Commit/Push ขึ้น GitHub เพื่อให้ทุกคนเห็นข้อมูลตรงกันครับ');
+      }).catch(err => {
+        console.error('Copy failed', err);
+        prompt('คัดลอกข้อความด้านล่างนี้ไปอัปเดต GitHub:', jsonStr);
+      });
+    }
+
+    // RENDER FUNCTIONS
+    function renderTalents(list) {
+      const grid = document.getElementById('talentGrid');
+      grid.innerHTML = '';
+
+      if (list.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px 0;">ไม่พบข้อมูลพนักงาน</div>';
+        return;
+      }
+
+      list.forEach(item => {
+        const genderBadge = item.gender === 'ชาย' ? '👦🏻 ชาย' : '👧🏻 หญิง';
+        const isBooked = item.status === 'booked';
+        const statusBadgeHTML = isBooked 
+          ? '<span class="badge-status badge-booked">🔴 จองแล้ว</span>' 
+          : '<span class="badge-status badge-available">🟢 ว่าง</span>';
+
+        const bookButtonHTML = isBooked
+          ? '<button class="book-btn" disabled>ติดงาน</button>'
+          : `<button class="book-btn" onclick="openModal('bookingModal', ${item.id})">จองคิว</button>`;
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-img">
+            ${statusBadgeHTML}
+            <img src="${item.img || 'https://via.placeholder.com/300x350?text=No+Image'}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x350?text=No+Image'">
+          </div>
+          <div class="card-body">
+            <div class="badge-group">
+              <span class="badge">${item.category}</span>
+              <span class="badge badge-gender">${genderBadge}</span>
+            </div>
+            <h3>${item.name}</h3>
+            <div class="talent-info">📏 <strong>สัดส่วน:</strong> ${item.proportion || '-'}</div>
+            <div class="talent-info">📝 <strong>หมายเหตุ:</strong> ${item.note || '-'}</div>
+            <div class="price">${item.rate.toLocaleString()} บาท / ชม.</div>
+            <div class="card-actions">
+              ${bookButtonHTML}
+              <button class="edit-card-btn" onclick="editTalent(${item.id})">✏️ แก้ไข</button>
+              <button class="delete-card-btn" onclick="deleteTalent(${item.id})">🗑️</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // FILTER LOGIC
+    function applyCombinedFilter() {
+      let filtered = talents;
+
+      if (selectedGenderFilter !== 'all') {
+        filtered = filtered.filter(t => t.gender === selectedGenderFilter);
+      }
+      if (selectedCatFilter !== 'all') {
+        filtered = filtered.filter(t => t.category === selectedCatFilter);
+      }
+      if (selectedStatusFilter !== 'all') {
+        filtered = filtered.filter(t => (t.status || 'available') === selectedStatusFilter);
+      }
+
+      renderTalents(filtered);
+    }
+
+    function setGenderFilter(gender) {
+      selectedGenderFilter = gender;
+      document.querySelectorAll('.controls:nth-child(1) .filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      applyCombinedFilter();
+    }
+
+    function setCatFilter(cat) {
+      selectedCatFilter = cat;
+      document.querySelectorAll('.controls:nth-child(2) .filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      applyCombinedFilter();
+    }
+
+    function setStatusFilter(status) {
+      selectedStatusFilter = status;
+      document.querySelectorAll('.controls:nth-child(3) .filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      applyCombinedFilter();
+    }
+
+    // MODAL HANDLERS
+    function openModal(modalId, talentId = null) {
+      if (talentId) {
+        currentSelectedTalent = talents.find(t => t.id === talentId);
+        document.getElementById('talentId').value = talentId;
+        document.getElementById('modalTitle').innerText = `จองคิว: ${currentSelectedTalent.name}`;
+        document.getElementById('paymentMethod').value = 'โอนเงิน';
+        resetSlipPreview();
+        handlePaymentChange();
+        calculatePrice();
+      }
+
+      document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // PAYMENT & PRICE CALCULATION
+    function handlePaymentChange() {
+      const method = document.getElementById('paymentMethod').value;
+      const qrContainer = document.getElementById('qrContainer');
+      const slipGroup = document.getElementById('slipGroup');
+
+      if (method === 'โอนเงิน') {
+        qrContainer.style.display = 'block';
+        slipGroup.style.display = 'block';
+      } else {
+        qrContainer.style.display = 'none';
+        slipGroup.style.display = 'none';
+      }
+      calculatePrice();
+    }
+
+    function calculatePrice() {
+      if (!currentSelectedTalent) return;
+      const hours = parseInt(document.getElementById('bookHours').value) || 0;
+      const total = hours * currentSelectedTalent.rate;
+      document.getElementById('totalPrice').innerText = total.toLocaleString();
+
+      const method = document.getElementById('paymentMethod').value;
+      if (method === 'โอนเงิน') {
+        if (currentSelectedTalent.personalQr) {
+          document.getElementById('qrTitleLabel').innerText = `📲 QR Code ชำระเงิน (${currentSelectedTalent.name})`;
+          document.getElementById('qrAccountLabel').innerText = `บัญชีประจำตัว: ${currentSelectedTalent.name}`;
+          document.getElementById('qrImage').src = currentSelectedTalent.personalQr;
+        } else {
+          document.getElementById('qrTitleLabel').innerText = '⚠️ ยังไม่ได้ตั้งค่า QR Code ส่วนตัว';
+          document.getElementById('qrAccountLabel').innerText = 'กรุณาชำระด้วยเงินสดหรือติดต่อแอดมิน';
+          document.getElementById('qrImage').src = '';
+        }
+      }
+    }
+
+    // SUBMIT BOOKING
+    function submitBooking(e) {
+      e.preventDefault();
+      
+      const bookingData = {
+        id: Date.now(),
+        customer: document.getElementById('customerName').value,
+        talentName: currentSelectedTalent.name,
+        talentId: currentSelectedTalent.id,
+        date: document.getElementById('bookDate').value,
+        time: document.getElementById('bookTime').value,
+        hours: document.getElementById('bookHours').value,
+        location: document.getElementById('bookLocation').value,
+        payment: document.getElementById('paymentMethod').value,
+        total: document.getElementById('totalPrice').innerText,
+        slip: currentSlipBase64,
+        status: 'เสร็จสิ้น'
+      };
+
+      currentSelectedTalent.status = 'booked';
+      bookings.unshift(bookingData);
+      saveData();
+
+      alert(`✅ ยืนยันการจองคิวคุณ ${currentSelectedTalent.name} เรียบร้อยแล้ว!`);
+      closeModal('bookingModal');
+      document.getElementById('bookingForm').reset();
+      applyCombinedFilter();
+    }
+
+    // PREVIEW HELPERS (LOCAL FILES)
+    function previewSlip(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          currentSlipBase64 = evt.target.result;
+          document.getElementById('slipPreview').src = currentSlipBase64;
+          document.getElementById('slipPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        resetSlipPreview();
+      }
+    }
+
+    function resetSlipPreview() {
+      currentSlipBase64 = '';
+      document.getElementById('slipPreview').src = '';
+      document.getElementById('slipPreview').style.display = 'none';
+      document.getElementById('slipFile').value = '';
+    }
+
+    function previewTalentImg(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          currentTalentImgBase64 = evt.target.result;
+          const preview = document.getElementById('talentImgPreview');
+          preview.src = currentTalentImgBase64;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function previewTalentQr(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          currentTalentQrBase64 = evt.target.result;
+          const preview = document.getElementById('talentQrPreview');
+          preview.src = currentTalentQrBase64;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // TALENT CRUD
+    function openTalentModal(isEdit = false) {
+      document.getElementById('talentForm').reset();
+      document.getElementById('editTalentId').value = '';
+      document.getElementById('talentModalTitle').innerText = isEdit ? 'แก้ไขข้อมูลพนักงาน' : 'เพิ่มพนักงานใหม่';
+      
+      currentTalentImgBase64 = '';
+      currentTalentQrBase64 = '';
+      document.getElementById('talentImgPreview').style.display = 'none';
+      document.getElementById('talentQrPreview').style.display = 'none';
+      openModal('talentModal');
+    }
+
+    function editTalent(id) {
+      const t = talents.find(item => item.id == id);
+      if (t) {
+        openTalentModal(true);
+
+        document.getElementById('editTalentId').value = t.id;
+        document.getElementById('talentNameInput').value = t.name;
+        document.getElementById('talentGenderInput').value = t.gender || 'หญิง';
+        document.getElementById('talentCategoryInput').value = t.category;
+        document.getElementById('talentStatusInput').value = t.status || 'available';
+        document.getElementById('talentProportionInput').value = t.proportion || '';
+        document.getElementById('talentNoteInput').value = t.note || '';
+        document.getElementById('talentRateInput').value = t.rate;
+        
+        currentTalentImgBase64 = t.img || '';
+        const imgPreview = document.getElementById('talentImgPreview');
+        if (t.img) {
+          imgPreview.src = t.img;
+          imgPreview.style.display = 'block';
+        } else {
+          imgPreview.style.display = 'none';
+        }
+
+        currentTalentQrBase64 = t.personalQr || '';
+        const qrPreview = document.getElementById('talentQrPreview');
+        if (t.personalQr) {
+          qrPreview.src = t.personalQr;
+          qrPreview.style.display = 'block';
+        } else {
+          qrPreview.style.display = 'none';
+        }
+      }
+    }
+
+    function saveTalent(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editTalentId').value;
+      const name = document.getElementById('talentNameInput').value;
+      const gender = document.getElementById('talentGenderInput').value;
+      const category = document.getElementById('talentCategoryInput').value;
+      const status = document.getElementById('talentStatusInput').value;
+      const proportion = document.getElementById('talentProportionInput').value;
+      const note = document.getElementById('talentNoteInput').value;
+      const rate = parseInt(document.getElementById('talentRateInput').value);
+
+      if (editId) {
+        const t = talents.find(item => item.id == editId);
+        if (t) {
+          t.name = name;
+          t.gender = gender;
+          t.category = category;
+          t.status = status;
+          t.proportion = proportion;
+          t.note = note;
+          t.rate = rate;
+          if (currentTalentImgBase64) t.img = currentTalentImgBase64;
+          if (currentTalentQrBase64 !== undefined) t.personalQr = currentTalentQrBase64;
+        }
+      } else {
+        const newTalent = {
+          id: Date.now(),
+          name: name,
+          gender: gender,
+          category: category,
+          status: status,
+          proportion: proportion,
+          note: note,
+          rate: rate,
+          img: currentTalentImgBase64 || 'https://via.placeholder.com/300x350?text=No+Image',
+          personalQr: currentTalentQrBase64 || ''
+        };
+        talents.push(newTalent);
+      }
+
+      saveData();
+      closeModal('talentModal');
+      applyCombinedFilter();
+      alert('✅ บันทึกข้อมูลพนักงานเรียบร้อยแล้ว!\nอย่าลืมกดปุ่ม "📤 คัดลอกข้อมูล" ด้านบนเพื่อนำไปอัปเดต GitHub หากต้องการให้ทุกคนเห็นรูปภาพล่าสุด');
+    }
+
+    function deleteTalent(id) {
+      if (confirm('คุณต้องการลบพนักงานคนนี้ใช่หรือไม่?')) {
+        talents = talents.filter(t => t.id !== id);
+        saveData();
+        applyCombinedFilter();
+      }
+    }
+
+    // INIT APP
+    applyCombinedFilter();
+  </script>
+</body>
+</html>
